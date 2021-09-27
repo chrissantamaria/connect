@@ -155,6 +155,13 @@ class PrimeCheckout extends Component {
   componentDidMount() {
     this.setState({ simInfoLoading: true });
     this.fetchSimDetails(true);
+    this.componentDidUpdate({});
+  }
+
+  componentDidUpdate(prevProps) {
+    if (!prevProps.stripe_cancelled && this.props.stripe_cancelled) {
+      this.setState({ error: 'Checkout cancelled' });
+    }
   }
 
   async fetchSimDetails(retry) {
@@ -243,6 +250,7 @@ class PrimeCheckout extends Component {
       const resp = await Billing.getStripeCheckout(this.props.dongleId, this.state.simInfo.sim_id);
       window.location = resp.url;
     } catch (err) {
+      // TODO show error messages
       console.log(err);
       Sentry.captureException(err, { fingerprint: 'prime_goto_stripe_checkout' });
     }
