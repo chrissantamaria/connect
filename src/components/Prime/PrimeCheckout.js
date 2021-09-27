@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import Obstruction from 'obstruction';
 import fecha from 'fecha';
 import * as Sentry from '@sentry/react';
-import { withStyles, Typography, IconButton, Modal, Paper, Button, CircularProgress } from '@material-ui/core';
+import { withStyles, Typography, IconButton, Button, CircularProgress } from '@material-ui/core';
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
 import ErrorIcon from '@material-ui/icons/ErrorOutline';
 import WarningIcon from '@material-ui/icons/Warning';
@@ -13,7 +13,6 @@ import { billing as Billing } from '@commaai/comma-api';
 import { deviceTypePretty } from '../../utils';
 import { fetchSimInfo } from './util';
 import PrimeChecklist from './PrimeChecklist';
-import PrimePayment from './PrimePayment';
 import ResizeHandler from '../ResizeHandler';
 import Colors from '../../colors';
 import { primeNav } from '../../actions';
@@ -83,23 +82,8 @@ const styles = (theme) => ({
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
     '& p': { display: 'inline-block', marginLeft: 10 },
   },
-  paymentElement: {
-    maxWidth: 400,
-  },
   chargeText: {
     marginBottom: 10,
-  },
-  modal: {
-    position: 'absolute',
-    padding: theme.spacing.unit * 2,
-    width: theme.spacing.unit * 50,
-    maxWidth: '90%',
-    left: '50%',
-    top: '40%',
-    transform: 'translate(-50%, -50%)',
-    '& p': {
-      marginTop: 10,
-    },
   },
   buttons: {
     marginTop: 10,
@@ -121,15 +105,6 @@ const styles = (theme) => ({
       color: '#404B4F',
     }
   },
-  closeButton: {
-    marginTop: 10,
-    float: 'right',
-    backgroundColor: Colors.grey200,
-    color: Colors.white,
-    '&:hover': {
-      backgroundColor: Colors.grey400,
-    },
-  },
 });
 
 class PrimeCheckout extends Component {
@@ -141,12 +116,9 @@ class PrimeCheckout extends Component {
       simInfo: null,
       simValid: null,
       simInfoLoading: false,
-      activated: null,
-      new_subscription: null,
       windowWidth: window.innerWidth,
     };
 
-    this.onPrimeActivated = this.onPrimeActivated.bind(this);
     this.fetchSimDetails = this.fetchSimDetails.bind(this);
     this.fetchSimValid = this.fetchSimValid.bind(this);
     this.gotoCheckout = this.gotoCheckout.bind(this);
@@ -160,7 +132,7 @@ class PrimeCheckout extends Component {
 
   componentDidUpdate(prevProps) {
     if (!prevProps.stripe_cancelled && this.props.stripe_cancelled) {
-      this.setState({ error: 'Checkout cancelled' });
+      this.setState({ error: 'checkout cancelled' });
     }
   }
 
@@ -231,20 +203,6 @@ class PrimeCheckout extends Component {
     }
   }
 
-  onPrimeActivated(resp) {
-    if (resp.success) {
-      this.setState({ activated: resp, error: null });
-      Billing.getSubscription(this.props.dongleId).then((subscription) => {
-        this.setState({ new_subscription: subscription });
-      }).catch((err) => {
-        console.log(err);
-        Sentry.captureException(err, { fingerprint: 'prime_checkout_activated_fetch_sub' });
-      });
-    } else if (resp.error) {
-      this.setState({ error: resp.error });
-    }
-  }
-
   async gotoCheckout() {
     try {
       const resp = await Billing.getStripeCheckout(this.props.dongleId, this.state.simInfo.sim_id);
@@ -257,8 +215,8 @@ class PrimeCheckout extends Component {
   }
 
   render() {
-    const { classes, device, dongleId } = this.props;
-    const { new_subscription, windowWidth, activated, simInfo, simValid, simInfoLoading, error } = this.state;
+    const { classes, device } = this.props;
+    const { windowWidth, simInfo, simValid, simInfoLoading, error } = this.state;
 
     const alias = device.alias || deviceTypePretty(device.device_type);
 
@@ -315,28 +273,13 @@ class PrimeCheckout extends Component {
               return <Typography key={i} className={ classes.chargeText }>{ txt }</Typography>
             }) }
           </div>
-          <div className={ classes.overviewBlock + " " + classes.paymentElement }>
+          <div className={ classes.overviewBlock }>
             <Button className={ classes.buttons } onClick={ this.gotoCheckout } disabled={ Boolean(!simId) }>
               Go to checkout
             </Button>
           </div>
         </div>
       </div>
-      <Modal open={ Boolean(activated) } onClose={ () => window.location = window.location.origin + '/' + dongleId }>
-        <Paper className={classes.modal}>
-          <Typography variant="title">comma prime activated</Typography>
-          <Typography>Device: {alias} ({ dongleId })</Typography>
-          { activated && new_subscription && new_subscription.is_prime_sim &&
-            <Typography>
-              Connectivity will be enabled as soon as activation propagates to your local cell tower. Rebooting your device may help.
-            </Typography>
-          }
-          <Button variant="contained" className={ classes.closeButton }
-            onClick={ () => window.location = window.location.origin + '/' + dongleId }>
-            Close
-          </Button>
-        </Paper>
-      </Modal>
     </> );
   }
 }
