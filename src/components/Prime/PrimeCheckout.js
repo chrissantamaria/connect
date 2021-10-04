@@ -116,6 +116,7 @@ class PrimeCheckout extends Component {
       simInfo: null,
       simValid: null,
       simInfoLoading: false,
+      loadingCheckout: false,
       windowWidth: window.innerWidth,
     };
 
@@ -204,6 +205,7 @@ class PrimeCheckout extends Component {
   }
 
   async gotoCheckout() {
+    this.setState({ loadingCheckout: true });
     try {
       const resp = await Billing.getStripeCheckout(this.props.dongleId, this.state.simInfo.sim_id);
       window.location = resp.url;
@@ -216,7 +218,7 @@ class PrimeCheckout extends Component {
 
   render() {
     const { classes, device } = this.props;
-    const { windowWidth, simInfo, simValid, simInfoLoading, error } = this.state;
+    const { windowWidth, simInfo, simValid, simInfoLoading, error, loadingCheckout } = this.state;
 
     const alias = device.alias || deviceTypePretty(device.device_type);
 
@@ -274,8 +276,9 @@ class PrimeCheckout extends Component {
             }) }
           </div>
           <div className={ classes.overviewBlock }>
-            <Button className={ classes.buttons } onClick={ this.gotoCheckout } disabled={ Boolean(!simId) }>
-              Go to checkout
+            <Button className={ classes.buttons } onClick={ this.gotoCheckout }
+              disabled={ Boolean(!simId || loadingCheckout) }>
+              { loadingCheckout ? <CircularProgress size={ 19 } /> : 'Go to checkout' }
             </Button>
           </div>
         </div>
