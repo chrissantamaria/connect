@@ -233,6 +233,7 @@ class PrimeCheckout extends Component {
 
     const simId = simInfo ? simInfo.sim_id : null;
     const containerPadding = windowWidth > 520 ? 36 : 16;
+    const buttonSmallStyle = windowWidth < 514 ? { width: '100%' } : {};
 
     return ( <>
       <div className={ classes.primeBox }>
@@ -276,7 +277,7 @@ class PrimeCheckout extends Component {
             }) }
           </div>
           <div className={ classes.overviewBlock }>
-            <Button className={ classes.buttons } onClick={ this.gotoCheckout }
+            <Button className={ classes.buttons } style={ buttonSmallStyle } onClick={ this.gotoCheckout }
               disabled={ Boolean(!simId || loadingCheckout) }>
               { loadingCheckout ? <CircularProgress size={ 19 } /> : 'Go to checkout' }
             </Button>
