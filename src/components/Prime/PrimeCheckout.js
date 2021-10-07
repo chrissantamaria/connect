@@ -222,13 +222,16 @@ class PrimeCheckout extends Component {
 
     const alias = device.alias || deviceTypePretty(device.device_type);
 
-    let chargeText = ['You will be charged $24.00 today and monthly thereafter.'];
+    let chargeText = [
+      'Continue to checkout to set up comma prime.',
+      'You will be charged $24.00 today and monthly thereafter.',
+    ];
     if (this.isTrialClaimable()) {
-      chargeText = [`Fill in your payment information to claim your trial.`,
-        `You will be charged $24.00 on ${this.firstChargeDate()} and monthly thereafter.`];
-      if (this.claimEndDate()) {
-        chargeText.push(`Offer only valid until ${this.claimEndDate()}.`);
-      }
+      const claminEndDate = this.claimEndDate();
+      chargeText = [
+        'Continue to checkout to claim your trial' + (claminEndDate ? `, offer only valid until ${claminEndDate}.` : '.'),
+        `You will be charged $24.00 on ${this.firstChargeDate()} and monthly thereafter.`
+      ];
     }
 
     const simId = simInfo ? simInfo.sim_id : null;
