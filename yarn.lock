@@ -1174,10 +1174,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@commaai/comma-api@^2.1.2":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/@commaai/comma-api/-/comma-api-2.1.2.tgz#f8581996c9d3c3f8b427dc88607294b36174f102"
-  integrity sha512-XPhZufFkmBgQ04tKB+/j8DYLYAt28lm73J2EdBs9+ybo2uLMRRHcyzmek5rGomOXhCUlSN/LhOFRMT2xkOjDUA==
+"@commaai/comma-api@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@commaai/comma-api/-/comma-api-2.2.0.tgz#ad6a0565245d9b285f66c3be2674f94091eb385f"
+  integrity sha512-iMkB67HDPF/Up11UhW5dictUYsS+O+dRa+zOnJ/FSr2R30oV6vOXco3DaPO4XB1ADeEnogDFUj6CvY1SwFDD9g==
   dependencies:
     babel-runtime "^6.26.0"
     joi-browser "^13.4.0"
