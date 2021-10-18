@@ -163,7 +163,7 @@ class Media extends Component {
     // TODO: Remove this when the tests properly load config.js
     let CABANA_URL_ROOT = window.CABANA_URL_ROOT;
     if (!CABANA_URL_ROOT) {
-      CABANA_URL_ROOT = 'https://my.comma.ai/cabana/';
+      CABANA_URL_ROOT = 'https://cabana.comma.ai/';
     }
 
     const win = window.open(`${CABANA_URL_ROOT}?${qs.stringify(params, true)}`, '_blank');
